@@ -63,3 +63,32 @@ app.post('/api/appointments/book', async (req, res) => {
         res.status(500).send('Server Error during booking');
     }
 });
+
+// Route: USSD Endpoint (e.g., Africa's Talking integration)
+app.post('/api/ussd', (req, res) => {
+    const { sessionId, serviceCode, phoneNumber, text } = req.body;
+    let response = '';
+
+    // 'text' contains the user's input (e.g., '1*2' means they pressed 1 then 2)
+    if (text === '') {
+        // First screen when dialing *384*123#
+        response = `CON Welcome to HeriNjema
+        1. Book Appointment
+        2. View Last Visit Summary
+        3. Check Billing Balance`;
+    } else if (text === '1') {
+        // User selected Book Appointment
+        response = `CON Select Service:
+        1. General Consultation
+        2. Priority (Pregnancy/Diabetes)`;
+    } else if (text === '3') {
+        // Example: User selected Billing Balance
+        response = `END Your outstanding balance is KSh 0.00. NHIF applied successfully to last visit.`;
+    } else {
+        response = `END Invalid input. Please try again.`;
+    }
+
+    // Send response back to the telecom provider in plain text
+    res.set('Content-Type', 'text/plain');
+    res.send(response);
+});
