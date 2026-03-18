@@ -92,3 +92,25 @@ app.post('/api/ussd', (req, res) => {
     res.set('Content-Type', 'text/plain');
     res.send(response);
 });
+
+// Route: WhatsApp Webhook (Meta/Twilio API integration)
+app.post('/api/whatsapp/webhook', async (req, res) => {
+    // 1. Extract the incoming message and phone number
+    const incomingMsg = req.body.Body; 
+    const senderPhone = req.body.From;
+
+    console.log(`Message received on HeriNjema Bot from ${senderPhone}: ${incomingMsg}`);
+
+    // 2. Pass message to AI Logic (e.g., Dialogflow or custom prompt)
+    // const aiResponse = await processWithHeriBot(incomingMsg);
+    
+    // 3. Example static routing for now
+    let reply = "Hello! I am HeriBot. How can I assist with your health today?";
+    if (incomingMsg.toLowerCase().includes("emergency") || incomingMsg.includes("pain")) {
+        reply = "[SERIOUS] Please go to the nearest emergency room immediately, or press the red button on the HeriNjema app.";
+    }
+
+    // 4. Send the reply back via the WhatsApp API provider
+    res.status(200).json({ reply: reply }); 
+});    
+          
