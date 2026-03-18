@@ -1,0 +1,15 @@
+# 1. dependancy directories 
+node_modules/
+
+# 2. enivonment variables
+.env
+
+# 3. log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm/
+
+# 4. OS Generated Files (Keeps the repo clean across Mac/Windows)
+.DS_Store
+Thumbs.db
