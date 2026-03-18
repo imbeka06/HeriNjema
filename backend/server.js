@@ -37,7 +37,7 @@ app.listen(PORT, () => {
 });
 
 // Route: Book a new appointment via Smartphone App
-app.post('/api/appointments/book', async (req, res) => {
+app.post('/api/appointments/book', requireAuth, async (req, res) => {
     const { patient_id, doctor_id, appointment_time, is_emergency, priority_type } = req.body;
 
     try {
