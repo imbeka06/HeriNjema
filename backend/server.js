@@ -20,9 +20,9 @@ app.use(express.urlencoded({ extended: true })); // Required for parsing USSD in
 // ============================================================================
 // 2. DATABASE CONNECTION
 // ============================================================================
-// We import the database connection logic from your new config folder
+//  import the database connection logic from config folder
 // (Make sure to create db.js inside src/config/ later!)
-// const db = require('./src/config/db'); 
+const db = require('./src/config/db'); 
 
 // ============================================================================
 // 3. IMPORT ROUTES
