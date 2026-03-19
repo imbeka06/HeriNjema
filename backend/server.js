@@ -29,6 +29,7 @@ const db = require('./src/config/db');
 // ============================================================================
 //  uncommenting as I build the actual files in src/routes/
 const appointmentRoutes = require('./src/routes/appointmentRoutes');
+const billingRoutes = require('./src/routes/billingRoutes');
 // const authRoutes = require('./src/routes/authRoutes');
 // const ussdRoutes = require('./src/routes/ussdRoutes');
 // const whatsappRoutes = require('./src/routes/whatsappRoutes');
@@ -38,6 +39,7 @@ const appointmentRoutes = require('./src/routes/appointmentRoutes');
 // ============================================================================
 // When a request comes to '/api/appointments', send it to the appointmentRoutes file
 app.use('/api/appointments', appointmentRoutes);
+app.use('/api/billing', billingRoutes);
 
 // Future routes to be mounted:
 // app.use('/api/auth', authRoutes);
