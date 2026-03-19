@@ -6,7 +6,7 @@ const verifySHACoverage = async (shaNumber) => {
 
     try {
         // ====================================================================
-        // REAL API CALL (Commented out until you get official SHA API credentials)
+        // REAL API CALL (Commented out until I get official SHA API credentials)
         // ====================================================================
         /*
         const response = await axios.post('https://api.sha.go.ke/v1/verify', {
@@ -18,7 +18,7 @@ const verifySHACoverage = async (shaNumber) => {
         */
 
         // ====================================================================
-        // SIMULATED RESPONSE (For testing our backend today)
+        // SIMULATED RESPONSE (For testing my backend today)
         // ====================================================================
         // We will pretend that any number starting with 'SHA' is valid and active
         if (shaNumber && shaNumber.toUpperCase().startsWith('SHA')) {
