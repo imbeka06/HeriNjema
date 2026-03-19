@@ -3,7 +3,7 @@ const { verifySHACoverage } = require('../services/shaService');
 const { initiateSTKPush } = require('../services/mpesaService');
 
 const processPayment = async (req, res) => {
-    //  Later In my real app, I would fetch the total_bill from the database using the appointment_id
+    // In a real app, you would fetch the total_bill from the database using the appointment_id
     const { patient_phone, sha_number, total_bill } = req.body;
 
     console.log(`[Billing] Processing payment of KSh ${total_bill} for patient.`);
