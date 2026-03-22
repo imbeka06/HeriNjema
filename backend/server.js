@@ -61,6 +61,6 @@ app.get('/', (req, res) => {
 // ============================================================================
 app.listen(PORT, () => {
     console.log(`=======================================================`);
-    console.log(`🚀 HeriNjema Backend running on http://localhost:${PORT}`);
+    console.log(` HeriNjema Backend running on http://localhost:${PORT}`);
     console.log(`=======================================================`);
 });
