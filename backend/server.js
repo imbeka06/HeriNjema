@@ -32,7 +32,7 @@ const appointmentRoutes = require('./src/routes/appointmentRoutes');
 const billingRoutes = require('./src/routes/billingRoutes');
 // const authRoutes = require('./src/routes/authRoutes');
 // const ussdRoutes = require('./src/routes/ussdRoutes');
-// const whatsappRoutes = require('./src/routes/whatsappRoutes');
+const whatsappRoutes = require('./src/routes/whatsappRoutes');
 
 // ============================================================================
 // 4. MOUNT ROUTES (Directing the traffic)
