@@ -44,7 +44,7 @@ app.use('/api/billing', billingRoutes);
 // Future routes to be mounted:
 // app.use('/api/auth', authRoutes);
 // app.use('/api/ussd', ussdRoutes);
-// app.use('/api/whatsapp', whatsappRoutes);
+ app.use('/api/whatsapp', whatsappRoutes);
 
 // ============================================================================
 // 5. HEALTH CHECK ROUTE 
