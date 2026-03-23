@@ -1,6 +1,7 @@
+
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { StyleSheet, Text, View, SafeAreaView, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, ScrollView, TouchableOpacity, Alert,Linking } from 'react-native';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -9,6 +10,20 @@ export default function Dashboard() {
     Alert.alert(`${featureName} Tapped!`, `We will build the ${featureName} screen next.`);
   };
 
+  const openHeriBot = () => {
+    // Replace this with the actual phone number to register for HeriBot (include country code, no +)
+    const botNumber = "254757059907"; 
+    const message = "Hello HeriBot! I need some assistance.";
+    const url = `whatsapp://send?phone=${botNumber}&text=${message}`;
+
+    Linking.canOpenURL(url).then(supported => {
+      if (supported) {
+        Linking.openURL(url);
+      } else {
+        Alert.alert("WhatsApp Not Found", "Please install WhatsApp to chat with HeriBot.");
+      }
+    });
+  };
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
