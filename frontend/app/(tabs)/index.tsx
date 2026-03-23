@@ -1,11 +1,10 @@
-// File: app/(tabs)/index.tsx
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView, StatusBar, KeyboardAvoidingView, Platform } from 'react-native';
-import { useRouter } from 'expo-router'; // Enables screen transitions
+import { useRouter } from 'expo-router'; 
 
 export default function App() {
   const [phoneNumber, setPhoneNumber] = useState('');
-  const router = useRouter(); // Initialize the router
+  const router = useRouter(); 
 
   return (
     <SafeAreaView style={styles.container}>
@@ -34,7 +33,6 @@ export default function App() {
             onChangeText={setPhoneNumber}
           />
 
-          {/* Button navigates to explore.tsx when pressed */}
           <TouchableOpacity 
             style={styles.primaryButton}
             onPress={() => router.push('/explore')} 
@@ -48,7 +46,6 @@ export default function App() {
             <View style={styles.line} />
           </View>
 
-          {/* Biometric Button navigates to explore.tsx when pressed */}
           <TouchableOpacity 
             style={styles.biometricButton}
             onPress={() => router.push('/explore')} 
@@ -59,11 +56,8 @@ export default function App() {
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
-}
+} // FIX: Added the missing closing bracket right here!
 
-
-// STYLES
-=
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F4F7FB' },
   innerContainer: { flex: 1, justifyContent: 'center', paddingHorizontal: 24 },

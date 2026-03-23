@@ -1,11 +1,10 @@
-// File: app/(tabs)/explore.tsx
 import React from 'react';
 import { StyleSheet, Text, View, SafeAreaView, ScrollView, TouchableOpacity, Alert } from 'react-native';
 
 export default function Dashboard() {
   
-  // This function creates a pop-up alert when you press a button
-  const handlePress = (featureName) => {
+  // FIX: Added ": string" to satisfy TypeScript
+  const handlePress = (featureName: string) => {
     Alert.alert(`${featureName} Tapped!`, `We will build the ${featureName} screen next.`);
   };
 
@@ -13,13 +12,11 @@ export default function Dashboard() {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         
-        {/* Header Section */}
         <View style={styles.header}>
           <Text style={styles.greeting}>Welcome back,</Text>
           <Text style={styles.name}>Imbeka Musa</Text>
         </View>
 
-        {/* Upcoming Appointment Card */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <Text style={styles.cardTitle}>Next Appointment</Text>
@@ -32,23 +29,19 @@ export default function Dashboard() {
           <Text style={styles.appointmentTime}>Tomorrow, 10:00 AM</Text>
         </View>
 
-        {/* Quick Actions Grid */}
         <Text style={styles.sectionTitle}>Quick Actions</Text>
         <View style={styles.actionGrid}>
           
-          {/* Added onPress to Book Button */}
           <TouchableOpacity style={styles.actionButton} onPress={() => handlePress('Book Appointment')}>
             <Text style={styles.actionIcon}>📅</Text>
             <Text style={styles.actionText}>Book</Text>
           </TouchableOpacity>
           
-          {/* Added onPress to Pay Bill Button */}
           <TouchableOpacity style={styles.actionButton} onPress={() => handlePress('Pay Bill')}>
             <Text style={styles.actionIcon}>💳</Text>
             <Text style={styles.actionText}>Pay Bill</Text>
           </TouchableOpacity>
           
-          {/* Added onPress to Records Button */}
           <TouchableOpacity style={styles.actionButton} onPress={() => handlePress('Medical Records')}>
             <Text style={styles.actionIcon}>📄</Text>
             <Text style={styles.actionText}>Records</Text>
@@ -61,19 +54,13 @@ export default function Dashboard() {
   );
 }
 
-// ============================================================================
-// STYLES
-// ============================================================================
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F4F7FB' },
   scrollContent: { padding: 24 },
   header: { marginBottom: 32, marginTop: 40 },
   greeting: { fontSize: 16, color: '#4A5568' },
   name: { fontSize: 28, fontWeight: 'bold', color: '#1A365D' },
-  card: { 
-    backgroundColor: '#FFFFFF', padding: 20, borderRadius: 16, 
-    shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 10, elevation: 3, marginBottom: 32 
-  },
+  card: { backgroundColor: '#FFFFFF', padding: 20, borderRadius: 16, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 10, elevation: 3, marginBottom: 32 },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
   cardTitle: { fontSize: 16, fontWeight: 'bold', color: '#2D3748' },
   badge: { backgroundColor: '#E6FFFA', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
@@ -83,10 +70,7 @@ const styles = StyleSheet.create({
   appointmentTime: { fontSize: 14, color: '#3182CE', fontWeight: 'bold' },
   sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#2D3748', marginBottom: 16 },
   actionGrid: { flexDirection: 'row', justifyContent: 'space-between' },
-  actionButton: { 
-    backgroundColor: '#FFFFFF', padding: 20, borderRadius: 16, alignItems: 'center', width: '30%',
-    shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 10, elevation: 3 
-  },
+  actionButton: { backgroundColor: '#FFFFFF', padding: 20, borderRadius: 16, alignItems: 'center', width: '30%', shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 10, elevation: 3 },
   actionIcon: { fontSize: 24, marginBottom: 8 },
   actionText: { fontSize: 12, fontWeight: '600', color: '#2D3748' }
 });
