@@ -77,10 +77,16 @@ export default function Dashboard() {
       </ScrollView>
       
 
-      {/* Floating HeriBot WhatsApp Button */}
-      <TouchableOpacity style={styles.fab} onPress={openHeriBot}>
-        <Text style={styles.fabIcon}>💬</Text>
-      </TouchableOpacity>
+      
+      {/*  STATIC HERIBOT CARD (Centered) */}
+        <TouchableOpacity style={styles.heribotCard} onPress={openHeriBot}>
+          <View style={styles.heribotPortraitCircle}>
+            {/* I will replace this emoji with an Image component later */}
+            <Text style={styles.heribotIcon}>👩🏾‍💼</Text> 
+          </View>
+          <Text style={styles.heribotTitle}>Chat with HeriBot</Text>
+          <Text style={styles.heribotSubtitle}>Instant assistance with scheduling & payments</Text>
+        </TouchableOpacity>
 
     </SafeAreaView>
   );
@@ -108,6 +114,10 @@ const styles = StyleSheet.create({
   actionButton: { backgroundColor: '#FFFFFF', padding: 20, borderRadius: 16, alignItems: 'center', width: '30%', shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 10, elevation: 3 },
   actionIcon: { fontSize: 24, marginBottom: 8 },
   actionText: { fontSize: 12, fontWeight: '600', color: '#2D3748' },
-  fab: { position: 'absolute', bottom: 30, right: 24, backgroundColor: '#25D366', width: 60, height: 60, borderRadius: 30, justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.3, shadowRadius: 8, elevation: 5 },
-  fabIcon: { fontSize: 30 }
+ 
+  heribotCard: { backgroundColor: '#FFFFFF', padding: 24, borderRadius: 16, alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 10, elevation: 3, marginTop: 24, borderLeftWidth: 4, borderLeftColor: '#25D366' },
+  heribotPortraitCircle: { width: 80, height: 80, borderRadius: 40, backgroundColor: '#EDF2F7', justifyContent: 'center', alignItems: 'center', marginBottom: 16 },
+  heribotIcon: { fontSize: 40 },
+  heribotTitle: { fontSize: 18, fontWeight: 'bold', color: '#2D3748', textAlign: 'center' },
+  heribotSubtitle: { fontSize: 14, color: '#4A5568', textAlign: 'center', marginTop: 4 }
 });
