@@ -2,6 +2,7 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, View, SafeAreaView, ScrollView, TouchableOpacity, Alert,Linking } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 
 export default function Dashboard() {
   const router = useRouter();
