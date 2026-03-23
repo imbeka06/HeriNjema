@@ -75,9 +75,19 @@ export default function Dashboard() {
         </TouchableOpacity>
 
       </ScrollView>
+      
+
+      {/* Floating HeriBot WhatsApp Button */}
+      <TouchableOpacity style={styles.fab} onPress={openHeriBot}>
+        <Text style={styles.fabIcon}>💬</Text>
+      </TouchableOpacity>
+
     </SafeAreaView>
   );
 }
+  
+  
+
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F4F7FB' },
@@ -98,4 +108,6 @@ const styles = StyleSheet.create({
   actionButton: { backgroundColor: '#FFFFFF', padding: 20, borderRadius: 16, alignItems: 'center', width: '30%', shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 10, elevation: 3 },
   actionIcon: { fontSize: 24, marginBottom: 8 },
   actionText: { fontSize: 12, fontWeight: '600', color: '#2D3748' }
+  fab: { position: 'absolute', bottom: 30, right: 24, backgroundColor: '#25D366', width: 60, height: 60, borderRadius: 30, justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.3, shadowRadius: 8, elevation: 5 },
+  fabIcon: { fontSize: 30 }
 });
