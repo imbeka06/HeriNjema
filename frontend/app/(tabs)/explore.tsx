@@ -3,7 +3,7 @@ import React from 'react';
 import { StyleSheet, Text, View, SafeAreaView, ScrollView, TouchableOpacity, Alert } from 'react-native';
 
 export default function Dashboard() {
-  
+  const router = useRouter();
   // FIX: Added ": string" to satisfy TypeScript
   const handlePress = (featureName: string) => {
     Alert.alert(`${featureName} Tapped!`, `We will build the ${featureName} screen next.`);
