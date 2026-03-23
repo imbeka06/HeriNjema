@@ -81,12 +81,11 @@ export default function Dashboard() {
       
       {/*  STATIC HERIBOT CARD (Centered) */}
         <TouchableOpacity style={styles.heribotCard} onPress={openHeriBot}>
-          <View style={styles.heribotPortraitCircle}>
-            {/* I will replace this emoji with an Image component later */}
-            <Text style={styles.heribotIcon}>👩🏾‍💼</Text> 
+          <View style={styles.whatsappCircle}>
+            <Text style={styles.heribotIcon}>💬</Text>
           </View>
           <Text style={styles.heribotTitle}>Chat with HeriBot</Text>
-          <Text style={styles.heribotSubtitle}>Instant assistance with scheduling & payments</Text>
+          <Text style={styles.heribotSubtitle}>Instant assistance with services</Text>
         </TouchableOpacity>
 
     </SafeAreaView>
@@ -117,6 +116,7 @@ const styles = StyleSheet.create({
   actionText: { fontSize: 12, fontWeight: '600', color: '#2D3748' },
  
   heribotCard: { backgroundColor: '#FFFFFF', padding: 24, borderRadius: 16, alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 10, elevation: 3, marginTop: 24, borderLeftWidth: 4, borderLeftColor: '#25D366' },
+  whatsappCircle: { width: 80, height: 80, borderRadius: 40, backgroundColor: '#FFFFFF', borderWidth: 3, borderColor: '#25D366', justifyContent: 'center', alignItems: 'center', marginBottom: 16, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 5, elevation: 2 },
   heribotPortraitCircle: { width: 80, height: 80, borderRadius: 40, backgroundColor: '#EDF2F7', justifyContent: 'center', alignItems: 'center', marginBottom: 16 },
   heribotIcon: { fontSize: 40 },
   heribotTitle: { fontSize: 18, fontWeight: 'bold', color: '#2D3748', textAlign: 'center' },
