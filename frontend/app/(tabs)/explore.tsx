@@ -33,7 +33,7 @@ export default function Dashboard() {
         <Text style={styles.sectionTitle}>Quick Actions</Text>
         <View style={styles.actionGrid}>
           
-          <TouchableOpacity style={styles.actionButton} onPress={() => handlePress('Book Appointment')}>
+          <TouchableOpacity style={styles.actionButton} onPress={() => router.push('/book')}>
             <Text style={styles.actionIcon}>📅</Text>
             <Text style={styles.actionText}>Book</Text>
           </TouchableOpacity>
