@@ -38,7 +38,7 @@ export default function Dashboard() {
             <Text style={styles.actionText}>Book</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.actionButton} onPress={() => handlePress('Pay Bill')}>
+          <TouchableOpacity style={styles.actionButton} onPress={() => router.push('/pay')}>
             <Text style={styles.actionIcon}>💳</Text>
             <Text style={styles.actionText}>Pay Bill</Text>
           </TouchableOpacity>
