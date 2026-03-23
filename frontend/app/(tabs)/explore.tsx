@@ -1,112 +1,81 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+// File: app/(tabs)/explore.tsx
+import React from 'react';
+import { StyleSheet, Text, View, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 
-import { Collapsible } from '@/components/ui/collapsible';
-import { ExternalLink } from '@/components/external-link';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Fonts } from '@/constants/theme';
-
-export default function TabTwoScreen() {
+export default function Dashboard() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText
-          type="title"
-          style={{
-            fontFamily: Fonts.rounded,
-          }}>
-          Explore
-        </ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image
-          source={require('@/assets/images/react-logo.png')}
-          style={{ width: 100, height: 100, alignSelf: 'center' }}
-        />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful{' '}
-          <ThemedText type="defaultSemiBold" style={{ fontFamily: Fonts.mono }}>
-            react-native-reanimated
-          </ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        
+        {/* Header Section */}
+        <View style={styles.header}>
+          <Text style={styles.greeting}>Welcome back,</Text>
+          <Text style={styles.name}>Imbeka Musa</Text>
+        </View>
+
+        {/* Upcoming Appointment Card */}
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardTitle}>Next Appointment</Text>
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>Confirmed</Text>
+            </View>
+          </View>
+          <Text style={styles.doctorName}>Dr. Sarah Kariuki</Text>
+          <Text style={styles.appointmentDetails}>General Consultation</Text>
+          <Text style={styles.appointmentTime}>Tomorrow, 10:00 AM</Text>
+        </View>
+
+        {/* Quick Actions Grid */}
+        <Text style={styles.sectionTitle}>Quick Actions</Text>
+        <View style={styles.actionGrid}>
+          <TouchableOpacity style={styles.actionButton}>
+            <Text style={styles.actionIcon}>📅</Text>
+            <Text style={styles.actionText}>Book</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.actionButton}>
+            <Text style={styles.actionIcon}>💳</Text>
+            <Text style={styles.actionText}>Pay Bill</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.actionButton}>
+            <Text style={styles.actionIcon}>📄</Text>
+            <Text style={styles.actionText}>Records</Text>
+          </TouchableOpacity>
+        </View>
+
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
+
+// STYLES
+
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  container: { flex: 1, backgroundColor: '#F4F7FB' },
+  scrollContent: { padding: 24 },
+  header: { marginBottom: 32, marginTop: 40 },
+  greeting: { fontSize: 16, color: '#4A5568' },
+  name: { fontSize: 28, fontWeight: 'bold', color: '#1A365D' },
+  card: { 
+    backgroundColor: '#FFFFFF', padding: 20, borderRadius: 16, 
+    shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 10, elevation: 3, marginBottom: 32 
   },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
+  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  cardTitle: { fontSize: 16, fontWeight: 'bold', color: '#2D3748' },
+  badge: { backgroundColor: '#E6FFFA', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
+  badgeText: { color: '#319795', fontSize: 12, fontWeight: 'bold' },
+  doctorName: { fontSize: 20, fontWeight: 'bold', color: '#1A365D', marginBottom: 4 },
+  appointmentDetails: { fontSize: 14, color: '#4A5568', marginBottom: 12 },
+  appointmentTime: { fontSize: 14, color: '#3182CE', fontWeight: 'bold' },
+  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#2D3748', marginBottom: 16 },
+  actionGrid: { flexDirection: 'row', justifyContent: 'space-between' },
+  actionButton: { 
+    backgroundColor: '#FFFFFF', padding: 20, borderRadius: 16, alignItems: 'center', width: '30%',
+    shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 10, elevation: 3 
   },
+  actionIcon: { fontSize: 24, marginBottom: 8 },
+  actionText: { fontSize: 12, fontWeight: '600', color: '#2D3748' }
 });
