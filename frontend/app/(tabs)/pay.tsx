@@ -1,20 +1,59 @@
 // File: app/pay.tsx
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, TextInput, Alert, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 
 export default function PayBill() {
   const router = useRouter();
-  const [phoneNumber, setPhoneNumber] = useState('0712345678'); // Defaulting to the logged-in user's number
+  const [phoneNumber, setPhoneNumber] = useState('0757059907'); // Defaulting to the logged-in user's number
+  const [isProcessing, setIsProcessing] = useState(false);
   const outstandingBalance = 5000;
 
-  const handlePayment = () => {
-    // Later, this is where we will call your Node.js backend (/api/billing/pay)
-    Alert.alert(
-      "M-Pesa Prompt Sent", 
-      `Check your phone (${phoneNumber}) to enter your M-Pesa PIN for Ksh ${outstandingBalance}.`,
-      [{ text: "OK", onPress: () => router.back() }]
-    );
+  const handlePayment = async () => {
+    // Basic validation
+    if (!phoneNumber || phoneNumber.length < 9) {
+      Alert.alert("Invalid Number", "Please enter a valid M-Pesa phone number.");
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      // Replace this with your actual local network IP or production URL
+      // E.g., 'http://192.168.1.100:3000' or use process.env.EXPO_PUBLIC_API_URL
+      const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://YOUR_BACKEND_IP:192.168.0.101'; 
+
+      const response = await fetch(`${API_URL}/api/billing/pay`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // 'Authorization': `Bearer ${userToken}`, // Uncomment and pass token if your route is protected
+        },
+        body: JSON.stringify({
+          phoneNumber: phoneNumber,
+          amount: outstandingBalance,
+          // patientId: user.id // Pass other necessary data your backend expects
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert(
+          "M-Pesa Prompt Sent", 
+          `Check your phone (${phoneNumber}) to enter your M-Pesa PIN for Ksh ${outstandingBalance}.`,
+          [{ text: "OK", onPress: () => router.back() }]
+        );
+      } else {
+        // Handle backend errors (e.g., invalid number format, server error)
+        Alert.alert("Payment Failed", data.message || "Could not initiate payment. Please try again.");
+      }
+    } catch (error) {
+      console.error("Payment API Error:", error);
+      Alert.alert("Network Error", "Could not connect to the billing server. Please check your connection.");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -22,8 +61,8 @@ export default function PayBill() {
       
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Text style={styles.backText}>← Back</Text>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()} disabled={isProcessing}>
+          <Text style={[styles.backText, isProcessing && { opacity: 0.5 }]}>← Back</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Billing & Payments</Text>
         <View style={{ width: 60 }} />
@@ -47,12 +86,21 @@ export default function PayBill() {
             keyboardType="phone-pad"
             value={phoneNumber}
             onChangeText={setPhoneNumber}
+            editable={!isProcessing}
           />
         </View>
 
         {/* Pay Button */}
-        <TouchableOpacity style={styles.payButton} onPress={handlePayment}>
-          <Text style={styles.payButtonText}>Pay Ksh {outstandingBalance}</Text>
+        <TouchableOpacity 
+          style={[styles.payButton, isProcessing && styles.payButtonDisabled]} 
+          onPress={handlePayment}
+          disabled={isProcessing}
+        >
+          {isProcessing ? (
+            <ActivityIndicator color="#FFFFFF" size="small" />
+          ) : (
+            <Text style={styles.payButtonText}>Pay Ksh {outstandingBalance}</Text>
+          )}
         </TouchableOpacity>
 
         <Text style={styles.secureText}>🔒 Secured by HeriNjema Payments</Text>
@@ -81,6 +129,7 @@ const styles = StyleSheet.create({
   inputLabel: { fontSize: 12, color: '#718096', marginBottom: 8, fontWeight: '600' },
   input: { fontSize: 18, color: '#2D3748', borderBottomWidth: 1, borderBottomColor: '#E2E8F0', paddingVertical: 8 },
   payButton: { backgroundColor: '#48BB78', padding: 18, borderRadius: 12, alignItems: 'center', shadowColor: '#48BB78', shadowOpacity: 0.3, shadowRadius: 8, elevation: 3 },
+  payButtonDisabled: { backgroundColor: '#A0AEC0', shadowOpacity: 0 },
   payButtonText: { color: '#FFFFFF', fontSize: 18, fontWeight: 'bold' },
   secureText: { textAlign: 'center', color: '#A0AEC0', marginTop: 24, fontSize: 12 }
 });
