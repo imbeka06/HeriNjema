@@ -47,8 +47,17 @@ export default function Dashboard() {
             <Text style={styles.actionIcon}>📄</Text>
             <Text style={styles.actionText}>Records</Text>
           </TouchableOpacity>
+
+          
+        
           
         </View>
+        <TouchableOpacity 
+          style={{ backgroundColor: '#FFF5F5', borderWidth: 2, borderColor: '#FC8181', padding: 20, borderRadius: 16, alignItems: 'center', marginTop: 32 }} 
+          onPress={() => router.push('/emergency')}
+        >
+          <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#E53E3E' }}>🚨 Request Emergency Ambulance</Text>
+        </TouchableOpacity>
 
       </ScrollView>
     </SafeAreaView>
