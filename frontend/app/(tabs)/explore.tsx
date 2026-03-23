@@ -1,8 +1,14 @@
 // File: app/(tabs)/explore.tsx
 import React from 'react';
-import { StyleSheet, Text, View, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, ScrollView, TouchableOpacity, Alert } from 'react-native';
 
 export default function Dashboard() {
+  
+  // This function creates a pop-up alert when you press a button
+  const handlePress = (featureName) => {
+    Alert.alert(`${featureName} Tapped!`, `We will build the ${featureName} screen next.`);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -29,20 +35,25 @@ export default function Dashboard() {
         {/* Quick Actions Grid */}
         <Text style={styles.sectionTitle}>Quick Actions</Text>
         <View style={styles.actionGrid}>
-          <TouchableOpacity style={styles.actionButton}>
+          
+          {/* Added onPress to Book Button */}
+          <TouchableOpacity style={styles.actionButton} onPress={() => handlePress('Book Appointment')}>
             <Text style={styles.actionIcon}>📅</Text>
             <Text style={styles.actionText}>Book</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.actionButton}>
+          {/* Added onPress to Pay Bill Button */}
+          <TouchableOpacity style={styles.actionButton} onPress={() => handlePress('Pay Bill')}>
             <Text style={styles.actionIcon}>💳</Text>
             <Text style={styles.actionText}>Pay Bill</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.actionButton}>
+          {/* Added onPress to Records Button */}
+          <TouchableOpacity style={styles.actionButton} onPress={() => handlePress('Medical Records')}>
             <Text style={styles.actionIcon}>📄</Text>
             <Text style={styles.actionText}>Records</Text>
           </TouchableOpacity>
+          
         </View>
 
       </ScrollView>
@@ -50,9 +61,9 @@ export default function Dashboard() {
   );
 }
 
-
+// ============================================================================
 // STYLES
-
+// ============================================================================
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F4F7FB' },
   scrollContent: { padding: 24 },
