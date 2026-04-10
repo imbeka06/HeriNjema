@@ -27,24 +27,22 @@ const db = require('./src/config/db');
 // ============================================================================
 // 3. IMPORT ROUTES
 // ============================================================================
-//  uncommenting as I build the actual files in src/routes/
 const appointmentRoutes = require('./src/routes/appointmentRoutes');
 const billingRoutes = require('./src/routes/billingRoutes');
-// const authRoutes = require('./src/routes/authRoutes');
-// const ussdRoutes = require('./src/routes/ussdRoutes');
+const authRoutes = require('./src/routes/authRoutes');
+const ussdRoutes = require('./src/routes/ussdRoutes');
 const whatsappRoutes = require('./src/routes/whatsappRoutes');
+const hospitalRoutes = require('./src/routes/hospitalRoutes');
 
 // ============================================================================
 // 4. MOUNT ROUTES (Directing the traffic)
 // ============================================================================
-// When a request comes to '/api/appointments', send it to the appointmentRoutes file
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/billing', billingRoutes);
-
-// Future routes to be mounted:
-// app.use('/api/auth', authRoutes);
-// app.use('/api/ussd', ussdRoutes);
- app.use('/api/whatsapp', whatsappRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/ussd', ussdRoutes);
+app.use('/api/whatsapp', whatsappRoutes);
+app.use('/api/hospital', hospitalRoutes);
 
 // ============================================================================
 // 5. HEALTH CHECK ROUTE 
@@ -57,7 +55,13 @@ app.get('/', (req, res) => {
 });
 
 // ============================================================================
-// 6. START THE SERVER
+// 6. ERROR HANDLING MIDDLEWARE
+// ============================================================================
+const { errorHandler } = require('./src/utils/errorHandler');
+app.use(errorHandler);
+
+// ============================================================================
+// 7. START THE SERVER
 // ============================================================================
 app.listen(PORT, () => {
     console.log(`=======================================================`);
