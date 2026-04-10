@@ -102,4 +102,57 @@ const processPayment = async (req, res) => {
     }
 };
 
-module.exports = { processPayment };
+const mpesaCallback = async (req, res) => {
+    console.log("------- M-PESA CALLBACK RECEIVED -------");
+    
+    try {
+        // Safaricom wraps the important data inside Body.stkCallback
+        const callbackData = req.body?.Body?.stkCallback;
+        
+        if (!callbackData) {
+            console.error("Invalid M-Pesa payload received:", req.body);
+            return res.status(400).json({ ResultCode: 1, ResultDesc: "Invalid Payload" });
+        }
+
+        const resultCode = callbackData.ResultCode;
+        const resultDesc = callbackData.ResultDesc;
+        const checkoutRequestID = callbackData.CheckoutRequestID;
+
+        console.log(`[Webhook] CheckoutRequestID: ${checkoutRequestID}`);
+        console.log(`[Webhook] Result: ${resultDesc} (Code: ${resultCode})`);
+
+        if (resultCode === 0) {
+            // Transaction was SUCCESSFUL
+            // We need to dig into the CallbackMetadata array to find the actual M-Pesa Receipt Number
+            const callbackMetadata = callbackData.CallbackMetadata.Item;
+            const receiptItem = callbackMetadata.find(item => item.Name === 'MpesaReceiptNumber');
+            const mpesaReceiptNumber = receiptItem ? receiptItem.Value : 'UNKNOWN';
+
+            console.log(`[Webhook] ✅ Payment successful! Receipt: ${mpesaReceiptNumber}`);
+
+            // TODO: Database Updates
+            // 1. Find the Transaction where checkout_request_id === checkoutRequestID
+            // 2. Update its status to 'SUCCESS' and save the mpesaReceiptNumber
+            // 3. Update the associated Invoice status to 'PAID'
+
+        } else {
+            // Transaction FAILED, TIMED OUT, or CANCELLED by user (Code 1032)
+            console.log(`[Webhook] ❌ Payment failed or cancelled.`);
+            
+            // TODO: Database Updates
+            // 1. Find the Transaction where checkout_request_id === checkoutRequestID
+            // 2. Update its status to 'FAILED' or 'CANCELLED'
+        }
+
+        // Safaricom expects a simple success acknowledgment. 
+        // If you don't send this, they will keep retrying the webhook.
+        res.status(200).json({ ResultCode: 0, ResultDesc: "Accepted" });
+
+    } catch (error) {
+        console.error("[Webhook Error]:", error);
+        // Even if your DB logic fails, acknowledge Safaricom so they stop hammering your server
+        res.status(200).json({ ResultCode: 1, ResultDesc: "Internal Error, but received" });
+    }
+};
+
+module.exports = { processPayment, mpesaCallback };
