@@ -4,11 +4,17 @@
 
 const express = require('express');
 const cors = require('cors');
+const WebSocket = require('ws');
+const http = require('http');
 require('dotenv').config(); // Loads your secret variables from the .env file
 
 // Initialize the Express App
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Create HTTP server for both Express and WebSocket
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
 
 // ============================================================================
 // 1. GLOBAL MIDDLEWARE
@@ -35,6 +41,8 @@ const whatsappRoutes = require('./src/routes/whatsappRoutes');
 const hospitalRoutes = require('./src/routes/hospitalRoutes');
 const fhirRoutes = require('./src/routes/fhirRoutes');
 const heriBotRoutes = require('./src/routes/heriBotRoutes');
+const realtimeRoutes = require('./src/routes/realtimeRoutes');
+const { handleWebSocketConnection } = require('./src/services/websocketHandler');
 
 // ============================================================================
 // 4. MOUNT ROUTES (Directing the traffic)
@@ -47,6 +55,13 @@ app.use('/api/whatsapp', whatsappRoutes);
 app.use('/api/hospital', hospitalRoutes);
 app.use('/api/fhir', fhirRoutes);
 app.use('/api/heribot', heriBotRoutes);
+app.use('/api/realtime', realtimeRoutes);
+
+// ============================================================================
+// 4.5 WEBSOCKET SETUP
+// ============================================================================
+wss.on('connection', handleWebSocketConnection);
+console.log('[WS] WebSocket server initialized');
 
 // ============================================================================
 // 5. HEALTH CHECK ROUTE 
@@ -67,8 +82,9 @@ app.use(errorHandler);
 // ============================================================================
 // 7. START THE SERVER
 // ============================================================================
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`=======================================================`);
     console.log(` HeriNjema Backend running on http://localhost:${PORT}`);
+    console.log(` WebSocket available at ws://localhost:${PORT}`);
     console.log(`=======================================================`);
 });
