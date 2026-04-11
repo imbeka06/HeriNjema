@@ -40,13 +40,63 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [biometricAvailable, setBiometricAvailable] = useState(false);
+  const [biometricType, setBiometricType] = useState('Biometric');
   const [savedPhoneNumber, setSavedPhoneNumber] = useState('');
+  const [checkingSession, setCheckingSession] = useState(true);
 
-  // Initialize biometric availability check
+  // Initialize biometric availability check + auto-login if session exists
   useEffect(() => {
     checkBiometricAvailability();
     loadSavedPhoneNumber();
+    checkExistingSession();
   }, []);
+
+  // ========================================================================
+  // ROUTE BASED ON USER TYPE
+  // ========================================================================
+
+  const navigateByUserType = (userType: string | null) => {
+    if (userType === 'HOSPITAL_STAFF' || userType === 'ADMIN' || userType === 'DOCTOR') {
+      router.replace('/(hospital)');
+    } else {
+      router.replace('/(tabs)');
+    }
+  };
+
+  // ========================================================================
+  // CHECK EXISTING SESSION (auto-login on app restart)
+  // ========================================================================
+
+  const checkExistingSession = async () => {
+    try {
+      const token = await SecureStore.getItemAsync('auth_token');
+      const userType = await SecureStore.getItemAsync('user_type');
+      if (token) {
+        // Token exists — try biometric re-auth if available, else go straight in
+        const compatible = await LocalAuthentication.hasHardwareAsync();
+        const enrolled = await LocalAuthentication.isEnrolledAsync();
+        if (compatible && enrolled) {
+          const result = await LocalAuthentication.authenticateAsync({
+            promptMessage: 'Verify your identity to continue',
+            cancelLabel: 'Use Password',
+            disableDeviceFallback: false,
+          });
+          if (result.success) {
+            navigateByUserType(userType);
+            return;
+          }
+        } else {
+          // No biometric — auto-navigate with existing token
+          navigateByUserType(userType);
+          return;
+        }
+      }
+    } catch (error) {
+      console.error('Session check failed:', error);
+    } finally {
+      setCheckingSession(false);
+    }
+  };
 
   // ========================================================================
   // BIOMETRIC CHECK
@@ -57,6 +107,17 @@ export default function LoginScreen() {
       const compatible = await LocalAuthentication.hasHardwareAsync();
       const enrolled = await LocalAuthentication.isEnrolledAsync();
       setBiometricAvailable(compatible && enrolled);
+
+      if (compatible && enrolled) {
+        const types = await LocalAuthentication.supportedAuthenticationTypesAsync();
+        if (types.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION)) {
+          setBiometricType('Face ID');
+        } else if (types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT)) {
+          setBiometricType('Fingerprint');
+        } else {
+          setBiometricType('Biometric');
+        }
+      }
     } catch (error) {
       console.error('Biometric check failed:', error);
     }
@@ -135,8 +196,8 @@ export default function LoginScreen() {
         if (data.user_type) await SecureStore.setItemAsync('user_type', data.user_type);
         await SecureStore.setItemAsync('last_phone_number', formattedPhone);
 
-        // Navigate to app tabs
-        router.replace('/(tabs)');
+        // Navigate based on role
+        navigateByUserType(data.user_type || null);
       } else {
         Alert.alert('Login Failed', data.message || 'Invalid credentials');
       }
@@ -159,22 +220,26 @@ export default function LoginScreen() {
 
     try {
       const result = await LocalAuthentication.authenticateAsync({
-        disableDeviceFallback: false
+        promptMessage: `Sign in to HeriNjema`,
+        cancelLabel: 'Use Password',
+        disableDeviceFallback: false,
       });
 
       if (result.success) {
-        // Retrieve stored token and check if still valid
+        // Retrieve stored token and route by role
         const storedToken = await SecureStore.getItemAsync('auth_token');
         const storedUserId = await SecureStore.getItemAsync('user_id');
         const storedUserType = await SecureStore.getItemAsync('user_type');
 
         if (storedToken && storedUserId) {
-          // Token verification could be done here
-          // For now, assume it's valid if it exists
-          router.replace('/(tabs)');
+          navigateByUserType(storedUserType);
         } else {
-          Alert.alert('Session Expired', 'Please login again');
+          Alert.alert('Session Expired', 'Please login with your password');
         }
+      } else if (result.error === 'user_cancel') {
+        // User cancelled — do nothing, let them type password
+      } else {
+        Alert.alert('Authentication Failed', 'Please try again or use your password');
       }
     } catch (error: any) {
       Alert.alert('Biometric Error', error.message);
@@ -198,6 +263,13 @@ export default function LoginScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
+      {checkingSession ? (
+        <View style={styles.splashContainer}>
+          <Text style={styles.splashIcon}>🏥</Text>
+          <Text style={styles.splashTitle}>HeriNjema</Text>
+          <ActivityIndicator size="large" color="#007AFF" style={{ marginTop: 20 }} />
+        </View>
+      ) : (
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <ThemedView style={styles.container}>
           {/* HEADER */}
@@ -277,7 +349,7 @@ export default function LoginScreen() {
                 disabled={loading}
               >
                 <ThemedText style={styles.biometricButtonText}>
-                  🔐 Quick Login with Fingerprint
+                  🔐 Quick Login with {biometricType}
                 </ThemedText>
               </TouchableOpacity>
             )}
@@ -310,6 +382,7 @@ export default function LoginScreen() {
           </View>
         </ThemedView>
       </ScrollView>
+      )}
     </KeyboardAvoidingView>
   );
 }
@@ -322,6 +395,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5'
+  },
+  splashContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+  },
+  splashIcon: {
+    fontSize: 64,
+  },
+  splashTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#1A365D',
+    marginTop: 12,
   },
   scrollContent: {
     flexGrow: 1,
