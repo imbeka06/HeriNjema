@@ -17,7 +17,7 @@ import {
   SafeAreaView
 } from 'react-native';
 import * as Location from 'expo-location';
-import * as SecureStore from 'expo-secure-store';
+import { getItem } from '@/utils/secure-store';
 import { useRouter } from 'expo-router';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -77,6 +77,7 @@ export default function Emergency() {
 
   const requestLocationPermissions = async () => {
     try {
+      if (Platform.OS === 'web') return false;
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert('Permission Denied', 'Location permission is required for emergency alerts');
@@ -152,8 +153,8 @@ export default function Emergency() {
       setLocation(currentLocation);
 
       // Get stored user info
-      const token = await SecureStore.getItemAsync('auth_token');
-      const userId = await SecureStore.getItemAsync('user_id');
+      const token = await getItem('auth_token');
+      const userId = await getItem('user_id');
 
       if (!token) {
         Alert.alert('Auth Error', 'Please login first');
