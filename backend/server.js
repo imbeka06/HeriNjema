@@ -28,7 +28,12 @@ app.use(express.urlencoded({ extended: true })); // Required for parsing USSD in
 // ============================================================================
 //  import the database connection logic from config folder
 // (Make sure to create db.js inside src/config/ later!)
-const db = require('./src/config/db'); 
+const db = require('./src/config/db');
+
+// ============================================================================
+// 2.5 SWAGGER CONFIGURATION
+// ============================================================================
+const { swaggerUi, specs } = require('../swagger'); 
 
 // ============================================================================
 // 3. IMPORT ROUTES
@@ -56,6 +61,19 @@ app.use('/api/hospital', hospitalRoutes);
 app.use('/api/fhir', fhirRoutes);
 app.use('/api/heribot', heriBotRoutes);
 app.use('/api/realtime', realtimeRoutes);
+
+// ============================================================================
+// 4.6 SWAGGER DOCUMENTATION
+// ============================================================================
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, { 
+    swaggerOptions: { 
+        url: '/api/swagger.json'
+    }
+}));
+
+app.get('/api/swagger.json', (req, res) => {
+    res.json(specs);
+});
 
 // ============================================================================
 // 4.5 WEBSOCKET SETUP
