@@ -57,7 +57,7 @@ export default function LoginScreen() {
 
   const navigateByUserType = (userType: string | null) => {
     if (userType === 'HOSPITAL_STAFF' || userType === 'ADMIN' || userType === 'DOCTOR') {
-      router.replace('/(hospital)');
+      router.replace('/(hospital)/index' as any);
     } else {
       router.replace('/(tabs)');
     }
