@@ -7,7 +7,7 @@ import {
   StyleSheet, Text, View, SafeAreaView, ScrollView,
   TouchableOpacity, Alert, RefreshControl,
 } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
+import { getItem, deleteItem } from '@/utils/secure-store';
 import { useRouter } from 'expo-router';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
@@ -41,8 +41,8 @@ export default function HospitalDashboard() {
 
   const loadStaffInfo = async () => {
     try {
-      const name = await SecureStore.getItemAsync('staff_name');
-      const hospital = await SecureStore.getItemAsync('hospital_name');
+      const name = await getItem('staff_name');
+      const hospital = await getItem('hospital_name');
       if (name) setStaffName(name);
       if (hospital) setHospitalName(hospital);
     } catch {}
@@ -51,7 +51,7 @@ export default function HospitalDashboard() {
   const handleRefresh = async () => {
     setRefreshing(true);
     try {
-      const token = await SecureStore.getItemAsync('auth_token');
+      const token = await getItem('auth_token');
       const response = await fetch(`${API_BASE_URL}/hospital/dashboard-stats`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
@@ -73,9 +73,9 @@ export default function HospitalDashboard() {
         text: 'Sign Out',
         style: 'destructive',
         onPress: async () => {
-          await SecureStore.deleteItemAsync('auth_token');
-          await SecureStore.deleteItemAsync('user_id');
-          await SecureStore.deleteItemAsync('user_type');
+          await deleteItem('auth_token');
+          await deleteItem('user_id');
+          await deleteItem('user_type');
           router.replace('/');
         },
       },
