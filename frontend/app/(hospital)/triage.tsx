@@ -7,7 +7,7 @@ import {
   StyleSheet, Text, View, SafeAreaView, ScrollView,
   TouchableOpacity, Alert, RefreshControl, ActivityIndicator,
 } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
+import { getItem } from '@/utils/secure-store';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
 
@@ -40,7 +40,7 @@ export default function TriageQueue() {
   const handleRefresh = async () => {
     setRefreshing(true);
     try {
-      const token = await SecureStore.getItemAsync('auth_token');
+      const token = await getItem('auth_token');
       await fetch(`${API_BASE_URL}/hospital/triage-queue`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
