@@ -1,46 +1,253 @@
-// File: app/emergency.tsx
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+// ============================================================================
+// File: app/(tabs)/emergency.tsx
+// Emergency Alert Screen - One-Click Emergency Call with Backend Integration
+// ============================================================================
+
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Alert,
+  Animated,
+  ActivityIndicator,
+  Platform,
+  Dimensions,
+  SafeAreaView
+} from 'react-native';
 import * as Location from 'expo-location';
+import * as SecureStore from 'expo-secure-store';
 import { useRouter } from 'expo-router';
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+const { width } = Dimensions.get('window');
+
+interface VitalSigns {
+  heart_rate?: number;
+  blood_pressure?: string;
+  temperature?: number;
+  oxygen_saturation?: number;
+}
+
+interface LocationCoords {
+  latitude: number;
+  longitude: number;
+}
 
 export default function Emergency() {
   const router = useRouter();
-  const [isLocating, setIsLocating] = useState(false);
-  const [locationSent, setLocationSent] = useState(false);
+  const [isEmergency, setIsEmergency] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [location, setLocation] = useState<LocationCoords | null>(null);
+  const [vitals, setVitals] = useState<VitalSigns>({});
+  const [emergencyMessage, setEmergencyMessage] = useState('');
+  const [symptoms, setSymptoms] = useState<string[]>([]);
+  
+  const pulseAnim = useRef(new Animated.Value(1)).current;
 
-  const triggerSOS = async () => {
-    setIsLocating(true);
-    
+  // ========================================================================
+  // ANIMATION FOR PULSE EFFECT
+  // ========================================================================
+
+  useEffect(() => {
+    if (isEmergency) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, {
+            toValue: 1.2,
+            duration: 500,
+            useNativeDriver: false
+          }),
+          Animated.timing(pulseAnim, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: false
+          })
+        ])
+      ).start();
+    }
+  }, [isEmergency]);
+
+  // ========================================================================
+  // REQUEST LOCATION PERMISSIONS
+  // ========================================================================
+
+  const requestLocationPermissions = async () => {
     try {
-      // 1. Ask the user for GPS permissions
-      let { status } = await Location.requestForegroundPermissionsAsync();
+      const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission Denied', 'We need location access to send an ambulance to your exact spot.');
-        setIsLocating(false);
+        Alert.alert('Permission Denied', 'Location permission is required for emergency alerts');
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error('Permission error:', error);
+      return false;
+    }
+  };
+
+  // ========================================================================
+  // GET CURRENT LOCATION
+  // ========================================================================
+
+  const getCurrentLocation = async () => {
+    try {
+      const hasPermission = await requestLocationPermissions();
+      if (!hasPermission) return null;
+
+      const userLocation = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High
+      });
+
+      return {
+        latitude: userLocation.coords.latitude,
+        longitude: userLocation.coords.longitude
+      };
+    } catch (error) {
+      console.error('Location error:', error);
+      return null;
+    }
+  };
+
+  // ========================================================================
+  // SEND EMERGENCY ALERT
+  // ========================================================================
+
+  const handleEmergencyAlert = async () => {
+    if (!isEmergency) {
+      // First tap - confirm emergency
+      Alert.alert(
+        'Emergency Alert',
+        'Are you experiencing a life-threatening emergency?',
+        [
+          {
+            text: 'No, Cancel',
+            onPress: () => setIsEmergency(false),
+            style: 'cancel'
+          },
+          {
+            text: 'Yes, Emergency',
+            onPress: () => setIsEmergency(true),
+            style: 'destructive'
+          }
+        ]
+      );
+      return;
+    }
+
+    // Second tap - send alert
+    setLoading(true);
+    try {
+      // Get location
+      const currentLocation = await getCurrentLocation();
+      if (!currentLocation) {
+        Alert.alert('Location Error', 'Could not obtain your location');
+        setLoading(false);
         return;
       }
 
-      // 2. Grab the exact hardware coordinates
-      let location = await Location.getCurrentPositionAsync({});
-      const lat = location.coords.latitude;
-      const lon = location.coords.longitude;
+      setLocation(currentLocation);
 
-      // 3. Simulate sending those coordinates to your Node.js backend
-      setTimeout(() => {
-        setIsLocating(false);
-        setLocationSent(true);
+      // Get stored user info
+      const token = await SecureStore.getItemAsync('auth_token');
+      const userId = await SecureStore.getItemAsync('user_id');
+
+      if (!token) {
+        Alert.alert('Auth Error', 'Please login first');
+        setLoading(false);
+        return;
+      }
+
+      // Send emergency alert to backend
+      const response = await fetch(`${API_BASE_URL}/hospital/emergency-alert`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          patient_id: userId,
+          gps_location: currentLocation,
+          vital_signs: vitals,
+          symptoms: symptoms || ['Emergency'],
+          emergency_message: emergencyMessage || 'Patient initiated emergency alert'
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setIsEmergency(false);
         Alert.alert(
-          "🚨 AMBULANCE DISPATCHED",
-          `Emergency services have received your GPS coordinates and are en route.\n\nLat: ${lat.toFixed(5)}\nLon: ${lon.toFixed(5)}`,
-          [{ text: "I understand, stay safe." }]
+          'Emergency Alert Sent',
+          'Nearby hospitals and emergency services have been notified. Help is on the way.',
+          [
+            {
+              text: 'OK',
+              onPress: () => {}
+            }
+          ]
         );
-      }, 1500);
-
-    } catch (error) {
-      Alert.alert('GPS Error', 'Could not fetch your location. Please call 999 directly.');
-      setIsLocating(false);
+      } else {
+        Alert.alert('Alert Failed', data.message || 'Failed to send emergency alert');
+      }
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to send emergency alert');
+    } finally {
+      setLoading(false);
     }
+  };
+
+  // ========================================================================
+  // CANCEL EMERGENCY
+  // ========================================================================
+
+  const handleCancel = () => {
+    Alert.alert(
+      'Cancel Emergency',
+      'Are you sure you want to cancel the emergency alert?',
+      [
+        {
+          text: 'Keep Alert Active',
+          onPress: () => {},
+          style: 'cancel'
+        },
+        {
+          text: 'Cancel Alert',
+          onPress: () => {
+            setIsEmergency(false);
+            setSymptoms([]);
+            setEmergencyMessage('');
+            setVitals({});
+          },
+          style: 'destructive'
+        }
+      ]
+    );
+  };
+
+  // ========================================================================
+  // QUICK SYMPTOM SELECTION
+  // ========================================================================
+
+  const symptomOptions = [
+    'Chest Pain',
+    'Unconscious',
+    'Severe Bleeding',
+    'Difficulty Breathing',
+    'Severe Injury',
+    'Other'
+  ];
+
+  const toggleSymptom = (symptom: string) => {
+    setSymptoms(prev =>
+      prev.includes(symptom)
+        ? prev.filter(s => s !== symptom)
+        : [...prev, symptom]
+    );
   };
 
   return (
