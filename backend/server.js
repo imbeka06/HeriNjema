@@ -33,6 +33,8 @@ const authRoutes = require('./src/routes/authRoutes');
 const ussdRoutes = require('./src/routes/ussdRoutes');
 const whatsappRoutes = require('./src/routes/whatsappRoutes');
 const hospitalRoutes = require('./src/routes/hospitalRoutes');
+const fhirRoutes = require('./src/routes/fhirRoutes');
+const heriBotRoutes = require('./src/routes/heriBotRoutes');
 
 // ============================================================================
 // 4. MOUNT ROUTES (Directing the traffic)
@@ -43,6 +45,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/ussd', ussdRoutes);
 app.use('/api/whatsapp', whatsappRoutes);
 app.use('/api/hospital', hospitalRoutes);
+app.use('/api/fhir', fhirRoutes);
+app.use('/api/heribot', heriBotRoutes);
 
 // ============================================================================
 // 5. HEALTH CHECK ROUTE 
