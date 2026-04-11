@@ -31,6 +31,12 @@ interface LoginResponse {
   user_id?: string;
   user_type?: string;
   message?: string;
+  // Nested data format (some endpoints use this)
+  data?: {
+    token?: string;
+    user_id?: string;
+    user_type?: string;
+  };
 }
 
 export default function LoginScreen() {
@@ -189,15 +195,18 @@ export default function LoginScreen() {
 
       const data: LoginResponse = await response.json();
 
-      if (data.success && data.token) {
-        // Save token to secure storage
-        if (data.token) await SecureStore.setItemAsync('auth_token', data.token);
-        if (data.user_id) await SecureStore.setItemAsync('user_id', data.user_id);
-        if (data.user_type) await SecureStore.setItemAsync('user_type', data.user_type);
+      if (data.success && (data.token || data.data?.token)) {
+        const token = data.token || data.data?.token;
+        const userId = data.user_id || data.data?.user_id;
+        const userType = data.user_type || data.data?.user_type;
+
+        if (token) await SecureStore.setItemAsync('auth_token', token);
+        if (userId) await SecureStore.setItemAsync('user_id', userId);
+        if (userType) await SecureStore.setItemAsync('user_type', userType);
         await SecureStore.setItemAsync('last_phone_number', formattedPhone);
 
         // Navigate based on role
-        navigateByUserType(data.user_type || null);
+        navigateByUserType(userType || null);
       } else {
         Alert.alert('Login Failed', data.message || 'Invalid credentials');
       }
@@ -374,6 +383,38 @@ export default function LoginScreen() {
             </TouchableOpacity>
           </View>
 
+          {/* DEMO MODE - Quick access for testing */}
+          <View style={styles.demoSection}>
+            <ThemedText style={styles.demoTitle}>🧪 Demo Mode</ThemedText>
+            <ThemedText style={styles.demoSubtitle}>
+              Preview the app without signing in
+            </ThemedText>
+            <View style={styles.demoButtons}>
+              <TouchableOpacity
+                style={styles.demoButtonPatient}
+                onPress={() => {
+                  SecureStore.setItemAsync('user_type', 'PATIENT');
+                  router.replace('/(tabs)');
+                }}
+              >
+                <ThemedText style={styles.demoButtonText}>
+                  🏠 Enter as Patient
+                </ThemedText>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.demoButtonStaff}
+                onPress={() => {
+                  SecureStore.setItemAsync('user_type', 'HOSPITAL_STAFF');
+                  router.replace('/(hospital)/index' as any);
+                }}
+              >
+                <ThemedText style={styles.demoButtonText}>
+                  🏥 Enter as Hospital Staff
+                </ThemedText>
+              </TouchableOpacity>
+            </View>
+          </View>
+
           {/* FEATURE PHONE INFO */}
           <View style={styles.featurePhoneInfo}>
             <ThemedText style={styles.featurePhoneText}>
@@ -548,5 +589,50 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#856404',
     fontWeight: '500'
+  },
+  demoSection: {
+    marginHorizontal: 20,
+    marginBottom: 20,
+    padding: 16,
+    backgroundColor: '#EFF6FF',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#BFDBFE',
+  },
+  demoTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1E40AF',
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  demoSubtitle: {
+    fontSize: 12,
+    color: '#6B7280',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  demoButtons: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  demoButtonPatient: {
+    flex: 1,
+    backgroundColor: '#007AFF',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  demoButtonStaff: {
+    flex: 1,
+    backgroundColor: '#059669',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  demoButtonText: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '600',
   }
 });
