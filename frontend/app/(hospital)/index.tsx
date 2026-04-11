@@ -83,10 +83,10 @@ export default function HospitalDashboard() {
   };
 
   const statCards: { label: string; value: string | number; icon: string; color: string; onPress?: () => void }[] = [
-    { label: 'Today\'s Appointments', value: stats.todayAppointments, icon: '📅', color: '#3182CE', onPress: () => router.push('/(hospital)/triage') },
-    { label: 'Pending Triage', value: stats.pendingTriage, icon: '🩺', color: '#D69E2E', onPress: () => router.push('/(hospital)/triage') },
-    { label: 'Active Emergencies', value: stats.activeEmergencies, icon: '🚨', color: '#E53E3E', onPress: () => router.push('/(hospital)/emergencies') },
-    { label: 'Pending Bills', value: stats.pendingBills, icon: '💳', color: '#38A169', onPress: () => router.push('/(hospital)/billing') },
+    { label: 'Today\'s Appointments', value: stats.todayAppointments, icon: '📅', color: '#3182CE', onPress: () => router.push('/triage' as any) },
+    { label: 'Pending Triage', value: stats.pendingTriage, icon: '🩺', color: '#D69E2E', onPress: () => router.push('/triage' as any) },
+    { label: 'Active Emergencies', value: stats.activeEmergencies, icon: '🚨', color: '#E53E3E', onPress: () => router.push('/emergencies' as any) },
+    { label: 'Pending Bills', value: stats.pendingBills, icon: '💳', color: '#38A169', onPress: () => router.push('/billing' as any) },
     { label: 'Bed Availability', value: `${stats.bedsAvailable}/${stats.totalBeds}`, icon: '🛏️', color: '#805AD5' },
   ];
 
@@ -128,17 +128,17 @@ export default function HospitalDashboard() {
         {/* Quick Actions */}
         <Text style={styles.sectionTitle}>Quick Actions</Text>
         <View style={styles.actionsRow}>
-          <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/(hospital)/triage')}>
+          <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/triage' as any)}>
             <Text style={styles.actionIcon}>📋</Text>
             <Text style={styles.actionText}>Review Triage Queue</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/(hospital)/emergencies')}>
+          <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/emergencies' as any)}>
             <Text style={styles.actionIcon}>🚑</Text>
             <Text style={styles.actionText}>Emergency Console</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.actionsRow}>
-          <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/(hospital)/billing')}>
+          <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/billing' as any)}>
             <Text style={styles.actionIcon}>🧾</Text>
             <Text style={styles.actionText}>Billing & Payments</Text>
           </TouchableOpacity>
