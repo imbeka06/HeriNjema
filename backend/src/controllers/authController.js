@@ -121,14 +121,12 @@ const login = async (req, res, next) => {
         res.json({
             success: true,
             message: 'Login successful',
-            data: {
-                user_id: user.user_id,
-                phone_number: user.phone_number,
-                email: user.email,
-                first_name: user.first_name,
-                last_name: user.last_name,
-                token
-            }
+            token,
+            user_id: user.user_id,
+            user_type: user.user_type || 'PATIENT',
+            phone_number: user.phone_number,
+            first_name: user.first_name,
+            last_name: user.last_name
         });
 
     } catch (error) {
