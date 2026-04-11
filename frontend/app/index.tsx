@@ -392,8 +392,8 @@ export default function LoginScreen() {
             <View style={styles.demoButtons}>
               <TouchableOpacity
                 style={styles.demoButtonPatient}
-                onPress={() => {
-                  SecureStore.setItemAsync('user_type', 'PATIENT');
+                onPress={async () => {
+                  try { await SecureStore.setItemAsync('user_type', 'PATIENT'); } catch {}
                   router.replace('/(tabs)');
                 }}
               >
@@ -403,8 +403,8 @@ export default function LoginScreen() {
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.demoButtonStaff}
-                onPress={() => {
-                  SecureStore.setItemAsync('user_type', 'HOSPITAL_STAFF');
+                onPress={async () => {
+                  try { await SecureStore.setItemAsync('user_type', 'HOSPITAL_STAFF'); } catch {}
                   router.replace('/(hospital)/index' as any);
                 }}
               >
