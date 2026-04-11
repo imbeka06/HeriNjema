@@ -19,7 +19,7 @@ import {
 import * as SecureStore from 'expo-secure-store';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { useRouter } from 'expo-router';
-import HelloWave from '@/components/hello-wave';
+import { HelloWave } from '@/components/hello-wave';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 
@@ -27,9 +27,10 @@ const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/a
 
 interface LoginResponse {
   success: boolean;
-  token: string;
-  user_id: string;
-  user_type: string;
+  token?: string;
+  user_id?: string;
+  user_type?: string;
+  message?: string;
 }
 
 export default function LoginScreen() {
@@ -129,19 +130,13 @@ export default function LoginScreen() {
 
       if (data.success && data.token) {
         // Save token to secure storage
-        await SecureStore.setItemAsync('auth_token', data.token);
-        await SecureStore.setItemAsync('user_id', data.user_id);
-        await SecureStore.setItemAsync('user_type', data.user_type);
+        if (data.token) await SecureStore.setItemAsync('auth_token', data.token);
+        if (data.user_id) await SecureStore.setItemAsync('user_id', data.user_id);
+        if (data.user_type) await SecureStore.setItemAsync('user_type', data.user_type);
         await SecureStore.setItemAsync('last_phone_number', formattedPhone);
 
-        // Navigate to appropriate dashboard based on user type
-        if (data.user_type === 'PATIENT') {
-          router.replace('/(tabs)');
-        } else if (data.user_type === 'HOSPITAL_STAFF') {
-          router.replace('/hospital-dashboard');
-        } else {
-          router.replace('/admin-dashboard');
-        }
+        // Navigate to app tabs
+        router.replace('/(tabs)');
       } else {
         Alert.alert('Login Failed', data.message || 'Invalid credentials');
       }
@@ -176,11 +171,7 @@ export default function LoginScreen() {
         if (storedToken && storedUserId) {
           // Token verification could be done here
           // For now, assume it's valid if it exists
-          if (storedUserType === 'PATIENT') {
-            router.replace('/(tabs)');
-          } else {
-            router.replace('/hospital-dashboard');
-          }
+          router.replace('/(tabs)');
         } else {
           Alert.alert('Session Expired', 'Please login again');
         }
@@ -195,7 +186,7 @@ export default function LoginScreen() {
   // ========================================================================
 
   const handleRegisterPress = () => {
-    router.push('/register');
+    Alert.alert('Register', 'Please visit https://herinjema.co.ke/register to create an account');
   };
 
   // ========================================================================

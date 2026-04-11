@@ -251,58 +251,365 @@ export default function Emergency() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.backText}>← Cancel & Go Back</Text>
-        </TouchableOpacity>
-      </View>
+    <ThemedView style={styles.container}>
+      {!isEmergency ? (
+        // NORMAL STATE
+        <View style={styles.normalState}>
+          <View style={styles.infoSection}>
+            <ThemedText type="title" style={styles.title}>
+              Emergency Alert
+            </ThemedText>
+            <ThemedText style={styles.subtitle}>
+              One-click call for help 🆘
+            </ThemedText>
+          </View>
 
-      <View style={styles.content}>
-        <Text style={styles.warningTitle}>EMERGENCY ASSISTANCE</Text>
-        <Text style={styles.warningText}>
-          Pressing the SOS button will immediately extract your GPS location and dispatch the nearest available ambulance to your coordinates.
-        </Text>
+          <TouchableOpacity
+            style={styles.emergencyButton}
+            onPress={handleEmergencyAlert}
+          >
+            <ThemedText style={styles.emergencyButtonText}>
+              🔴 TAP FOR EMERGENCY
+            </ThemedText>
+          </TouchableOpacity>
 
-        {/* The Giant Red Panic Button */}
-        <TouchableOpacity 
-          style={[styles.sosButton, locationSent && styles.sosButtonSuccess]} 
-          onPress={triggerSOS}
-          disabled={isLocating || locationSent}
-        >
-          {isLocating ? (
-            <ActivityIndicator size="large" color="#FFFFFF" />
-          ) : (
-            <Text style={styles.sosText}>{locationSent ? "HELP IS ON THE WAY" : "S O S"}</Text>
+          <View style={styles.instructions}>
+            <ThemedText style={styles.instructionTitle}>
+              What happens when you tap:
+            </ThemedText>
+            <View style={styles.instructionItem}>
+              <ThemedText style={styles.instructionNumber}>1</ThemedText>
+              <ThemedText style={styles.instructionText}>
+                Your location is sent to nearest hospitals
+              </ThemedText>
+            </View>
+            <View style={styles.instructionItem}>
+              <ThemedText style={styles.instructionNumber}>2</ThemedText>
+              <ThemedText style={styles.instructionText}>
+                Emergency services are alerted instantly
+              </ThemedText>
+            </View>
+            <View style={styles.instructionItem}>
+              <ThemedText style={styles.instructionNumber}>3</ThemedText>
+              <ThemedText style={styles.instructionText}>
+                Your medical history is shared with responders
+              </ThemedText>
+            </View>
+            <View style={styles.instructionItem}>
+              <ThemedText style={styles.instructionNumber}>4</ThemedText>
+              <ThemedText style={styles.instructionText}>
+                Real-time tracking follows your journey
+              </ThemedText>
+            </View>
+          </View>
+
+          <View style={styles.hotlineSection}>
+            <ThemedText style={styles.hotlineLabel}>
+              Emergency Hotline:
+            </ThemedText>
+            <TouchableOpacity style={styles.hotlineButton}>
+              <ThemedText style={styles.hotlineNumber}>
+                📞 +254 (0)20 2726000
+              </ThemedText>
+            </TouchableOpacity>
+          </View>
+        </View>
+      ) : (
+        // EMERGENCY ACTIVE STATE
+        <View style={styles.emergencyState}>
+          <Animated.View
+            style={[
+              styles.pulsingCircle,
+              {
+                transform: [{ scale: pulseAnim }]
+              }
+            ]}
+          >
+            <ThemedText style={styles.pulsingText}>
+              🚨
+            </ThemedText>
+          </Animated.View>
+
+          <ThemedText style={styles.emergencyTitle}>
+            EMERGENCY ALERT ACTIVE
+          </ThemedText>
+
+          <ThemedText style={styles.emergencySubtitle}>
+            Help is being sent to your location
+          </ThemedText>
+
+          {location && (
+            <View style={styles.locationInfo}>
+              <ThemedText style={styles.locationLabel}>Your Location:</ThemedText>
+              <ThemedText style={styles.locationCoords}>
+                Lat: {location.latitude.toFixed(4)}, Lon: {location.longitude.toFixed(4)}
+              </ThemedText>
+            </View>
           )}
-        </TouchableOpacity>
 
-        {isLocating && <Text style={styles.locatingText}>Acquiring GPS Satellite Lock...</Text>}
-      </View>
+          <View style={styles.symptomSelect}>
+            <ThemedText style={styles.symptomTitle}>
+              Select symptoms (optional):
+            </ThemedText>
+            <View style={styles.symptomGrid}>
+              {symptomOptions.map(symptom => (
+                <TouchableOpacity
+                  key={symptom}
+                  style={[
+                    styles.symptomButton,
+                    symptoms.includes(symptom) && styles.symptomButtonActive
+                  ]}
+                  onPress={() => toggleSymptom(symptom)}
+                >
+                  <ThemedText
+                    style={[
+                      styles.symptomText,
+                      symptoms.includes(symptom) && styles.symptomTextActive
+                    ]}
+                  >
+                    {symptom}
+                  </ThemedText>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
 
-    </SafeAreaView>
+          <TouchableOpacity
+            style={[styles.confirmButton, loading && styles.confirmButtonDisabled]}
+            onPress={handleEmergencyAlert}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" size="small" />
+            ) : (
+              <ThemedText style={styles.confirmButtonText}>
+                ✓ CONFIRM & SEND ALERT
+              </ThemedText>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={handleCancel}
+            disabled={loading}
+          >
+            <ThemedText style={styles.cancelButtonText}>
+              Cancel Emergency
+            </ThemedText>
+          </TouchableOpacity>
+        </View>
+      )}
+    </ThemedView>
   );
 }
 
 // ============================================================================
 // STYLES
 // ============================================================================
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF5F5' }, // Very light red background
-  header: { padding: 20, paddingTop: 40 },
-  backText: { fontSize: 16, color: '#4A5568', fontWeight: 'bold' },
-  content: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 },
-  warningTitle: { fontSize: 24, fontWeight: 'bold', color: '#C53030', marginBottom: 16, textAlign: 'center' },
-  warningText: { fontSize: 16, color: '#4A5568', textAlign: 'center', marginBottom: 60, lineHeight: 24 },
-  sosButton: { 
-    width: 250, height: 250, borderRadius: 125, backgroundColor: '#E53E3E', 
-    justifyContent: 'center', alignItems: 'center',
-    shadowColor: '#E53E3E', shadowOpacity: 0.5, shadowRadius: 20, elevation: 10,
-    borderWidth: 8, borderColor: '#FED7D7'
+  container: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingVertical: 20
   },
-  sosButtonSuccess: { backgroundColor: '#38A169', shadowColor: '#38A169', borderColor: '#C6F6D5' },
-  sosText: { color: '#FFFFFF', fontSize: 40, fontWeight: '900', letterSpacing: 4 },
-  locatingText: { marginTop: 30, fontSize: 16, color: '#C53030', fontWeight: 'bold' }
+  normalState: {
+    flex: 1,
+    justifyContent: 'center'
+  },
+  infoSection: {
+    alignItems: 'center',
+    marginBottom: 30
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: '700',
+    marginBottom: 10,
+    color: '#d32f2f'
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#666'
+  },
+  emergencyButton: {
+    backgroundColor: '#d32f2f',
+    borderRadius: 12,
+    paddingVertical: 20,
+    alignItems: 'center',
+    marginBottom: 30,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8
+  },
+  emergencyButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '700'
+  },
+  instructions: {
+    backgroundColor: '#f5f5f5',
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 20
+  },
+  instructionTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 12,
+    color: '#333'
+  },
+  instructionItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 10
+  },
+  instructionNumber: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#007AFF',
+    width: 30
+  },
+  instructionText: {
+    fontSize: 13,
+    color: '#666',
+    flex: 1,
+    lineHeight: 18
+  },
+  hotlineSection: {
+    backgroundColor: '#FFF3CD',
+    borderRadius: 8,
+    padding: 14,
+    alignItems: 'center'
+  },
+  hotlineLabel: {
+    fontSize: 12,
+    color: '#856404',
+    marginBottom: 8
+  },
+  hotlineButton: {
+    backgroundColor: '#FFC107',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 6
+  },
+  hotlineNumber: {
+    color: '#333',
+    fontSize: 16,
+    fontWeight: '600'
+  },
+  emergencyState: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  pulsingCircle: {
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    backgroundColor: '#d32f2f',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20
+  },
+  pulsingText: {
+    fontSize: 50
+  },
+  emergencyTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#d32f2f',
+    marginBottom: 5
+  },
+  emergencySubtitle: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 20,
+    textAlign: 'center'
+  },
+  locationInfo: {
+    backgroundColor: '#f5f5f5',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 20,
+    width: '100%'
+  },
+  locationLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#666',
+    marginBottom: 4
+  },
+  locationCoords: {
+    fontSize: 13,
+    color: '#333',
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace'
+  },
+  symptomSelect: {
+    width: '100%',
+    marginBottom: 20
+  },
+  symptomTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 10,
+    color: '#333'
+  },
+  symptomGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 8
+  },
+  symptomButton: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 8
+  },
+  symptomButtonActive: {
+    backgroundColor: '#d32f2f',
+    borderColor: '#d32f2f'
+  },
+  symptomText: {
+    fontSize: 12,
+    color: '#666',
+    fontWeight: '500'
+  },
+  symptomTextActive: {
+    color: '#fff'
+  },
+  confirmButton: {
+    backgroundColor: '#34C759',
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 10,
+    width: '100%'
+  },
+  confirmButtonDisabled: {
+    opacity: 0.6
+  },
+  confirmButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600'
+  },
+  cancelButton: {
+    borderWidth: 2,
+    borderColor: '#d32f2f',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+    width: '100%'
+  },
+  cancelButtonText: {
+    color: '#d32f2f',
+    fontSize: 15,
+    fontWeight: '600'
+  }
 });
