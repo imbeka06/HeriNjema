@@ -16,18 +16,8 @@ import {
   Platform,
   ScrollView
 } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
 import * as LocalAuthentication from 'expo-local-authentication';
-
-// Platform-safe wrappers (SecureStore & LocalAuthentication don't work on web)
-const safeSetItem = async (key: string, value: string) => {
-  if (Platform.OS === 'web') return;
-  return SecureStore.setItemAsync(key, value);
-};
-const safeGetItem = async (key: string): Promise<string | null> => {
-  if (Platform.OS === 'web') return null;
-  return SecureStore.getItemAsync(key);
-};
+import { getItem as safeGetItem, setItem as safeSetItem } from '@/utils/secure-store';
 import { useRouter } from 'expo-router';
 import { HelloWave } from '@/components/hello-wave';
 import { ThemedText } from '@/components/themed-text';
