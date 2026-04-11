@@ -18,6 +18,16 @@ import {
 } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import * as LocalAuthentication from 'expo-local-authentication';
+
+// Platform-safe wrappers (SecureStore & LocalAuthentication don't work on web)
+const safeSetItem = async (key: string, value: string) => {
+  if (Platform.OS === 'web') return;
+  return SecureStore.setItemAsync(key, value);
+};
+const safeGetItem = async (key: string): Promise<string | null> => {
+  if (Platform.OS === 'web') return null;
+  return SecureStore.getItemAsync(key);
+};
 import { useRouter } from 'expo-router';
 import { HelloWave } from '@/components/hello-wave';
 import { ThemedText } from '@/components/themed-text';
@@ -75,8 +85,9 @@ export default function LoginScreen() {
 
   const checkExistingSession = async () => {
     try {
-      const token = await SecureStore.getItemAsync('auth_token');
-      const userType = await SecureStore.getItemAsync('user_type');
+      if (Platform.OS === 'web') return;
+      const token = await safeGetItem('auth_token');
+      const userType = await safeGetItem('user_type');
       if (token) {
         // Token exists — try biometric re-auth if available, else go straight in
         const compatible = await LocalAuthentication.hasHardwareAsync();
@@ -110,6 +121,7 @@ export default function LoginScreen() {
 
   const checkBiometricAvailability = async () => {
     try {
+      if (Platform.OS === 'web') return;
       const compatible = await LocalAuthentication.hasHardwareAsync();
       const enrolled = await LocalAuthentication.isEnrolledAsync();
       setBiometricAvailable(compatible && enrolled);
@@ -135,7 +147,7 @@ export default function LoginScreen() {
 
   const loadSavedPhoneNumber = async () => {
     try {
-      const saved = await SecureStore.getItemAsync('last_phone_number');
+      const saved = await safeGetItem('last_phone_number');
       if (saved) {
         setSavedPhoneNumber(saved);
         setPhoneNumber(saved);
@@ -200,10 +212,10 @@ export default function LoginScreen() {
         const userId = data.user_id || data.data?.user_id;
         const userType = data.user_type || data.data?.user_type;
 
-        if (token) await SecureStore.setItemAsync('auth_token', token);
-        if (userId) await SecureStore.setItemAsync('user_id', userId);
-        if (userType) await SecureStore.setItemAsync('user_type', userType);
-        await SecureStore.setItemAsync('last_phone_number', formattedPhone);
+        if (token) await safeSetItem('auth_token', token);
+        if (userId) await safeSetItem('user_id', userId);
+        if (userType) await safeSetItem('user_type', userType);
+        await safeSetItem('last_phone_number', formattedPhone);
 
         // Navigate based on role
         navigateByUserType(userType || null);
@@ -236,9 +248,9 @@ export default function LoginScreen() {
 
       if (result.success) {
         // Retrieve stored token and route by role
-        const storedToken = await SecureStore.getItemAsync('auth_token');
-        const storedUserId = await SecureStore.getItemAsync('user_id');
-        const storedUserType = await SecureStore.getItemAsync('user_type');
+        const storedToken = await safeGetItem('auth_token');
+        const storedUserId = await safeGetItem('user_id');
+        const storedUserType = await safeGetItem('user_type');
 
         if (storedToken && storedUserId) {
           navigateByUserType(storedUserType);
@@ -393,7 +405,7 @@ export default function LoginScreen() {
               <TouchableOpacity
                 style={styles.demoButtonPatient}
                 onPress={async () => {
-                  try { await SecureStore.setItemAsync('user_type', 'PATIENT'); } catch {}
+                  await safeSetItem('user_type', 'PATIENT');
                   router.replace('/(tabs)');
                 }}
               >
@@ -404,7 +416,7 @@ export default function LoginScreen() {
               <TouchableOpacity
                 style={styles.demoButtonStaff}
                 onPress={async () => {
-                  try { await SecureStore.setItemAsync('user_type', 'HOSPITAL_STAFF'); } catch {}
+                  await safeSetItem('user_type', 'HOSPITAL_STAFF');
                   router.replace('/(hospital)/index' as any);
                 }}
               >
