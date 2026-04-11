@@ -8,7 +8,7 @@ import {
   StyleSheet, Text, View, SafeAreaView, ScrollView,
   TouchableOpacity, ActivityIndicator, Alert, RefreshControl
 } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
+import { getItem } from '@/utils/secure-store';
 import { useRouter } from 'expo-router';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
@@ -66,7 +66,7 @@ export default function MedicalRecords() {
   const fetchRecords = async () => {
     setLoading(true);
     try {
-      const token = await SecureStore.getItemAsync('auth_token');
+      const token = await getItem('auth_token');
       if (!token) return;
       const response = await fetch(`${API_BASE_URL}/fhir/patient/records`, {
         headers: { 'Authorization': `Bearer ${token}` },
