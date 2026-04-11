@@ -63,7 +63,7 @@ export default function LoginScreen() {
 
   const navigateByUserType = (userType: string | null) => {
     if (userType === 'HOSPITAL_STAFF' || userType === 'ADMIN' || userType === 'DOCTOR') {
-      router.replace('/(hospital)/index' as any);
+      router.replace('/(hospital)' as any);
     } else {
       router.replace('/(tabs)');
     }
@@ -407,7 +407,7 @@ export default function LoginScreen() {
                 style={styles.demoButtonStaff}
                 onPress={async () => {
                   await safeSetItem('user_type', 'HOSPITAL_STAFF');
-                  router.replace('/(hospital)/index' as any);
+                  router.replace('/(hospital)' as any);
                 }}
               >
                 <ThemedText style={styles.demoButtonText}>
